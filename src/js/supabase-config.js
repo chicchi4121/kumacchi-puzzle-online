@@ -6,8 +6,8 @@
 // - anon public key → SUPABASE_ANON_KEY (公開しても問題ない方の鍵です)
 // ==========================================================
 
-const SUPABASE_URL = 'https://tlxnwcemrnavazcprvaq.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_0kpxf9Hqqiz087lVujW3RA_96cboRnx';
+const SUPABASE_URL = 'https://dbbvqirohosnnoalelow.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_f9UnfnfFsf18fS1NgUvUgQ_l66_5TW7';
 
 let supabaseClient = null;
 if (
