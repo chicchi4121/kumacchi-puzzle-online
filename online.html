@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>くまっちパズル - オンライン対戦</title>
+<link rel="stylesheet" href="src/css/battle.css">
+<link rel="stylesheet" href="src/css/online.css">
+<link rel="preload" as="image" href="assets/images/blocks/red.png">
+<link rel="preload" as="image" href="assets/images/blocks/blue.png">
+<link rel="preload" as="image" href="assets/images/blocks/yellow.png">
+<link rel="preload" as="image" href="assets/images/blocks/green.png">
+<link rel="preload" as="image" href="assets/images/blocks/purple.png">
+<link rel="preload" as="image" href="assets/images/blocks/white.png">
+<link rel="preload" as="image" href="assets/images/blocks/gray.png">
+</head>
+<body>
+<a class="back-link" href="index.html">← タイトルへ</a>
+<audio id="title-bgm" src="assets/audio/title-bgm.mp3" loop preload="auto"></audio>
+<audio id="game-bgm" src="assets/audio/game-bgm.mp3" loop preload="auto"></audio>
+<button class="sound-toggle" id="sound-toggle" aria-label="音を再生">🔈</button>
+
+<!-- ロビー: モード選択 → ルームコード or ランダムマッチング → 対戦成立 -->
+<div class="setup-overlay lobby-overlay" id="lobby-overlay">
+
+  <div class="lobby-screen active" id="screen-mode">
+    <h1>オンライン対戦</h1>
+    <div class="nickname-row">
+      <label for="nickname-input">なまえ</label>
+      <input type="text" id="nickname-input" maxlength="10" placeholder="なまえ(10文字まで)">
+    </div>
+    <div class="lobby-btn-col">
+      <button class="result-btn lobby-btn" id="btn-random-match">🎲 ランダムマッチング</button>
+      <button class="result-btn lobby-btn secondary" id="btn-room-mode">🔑 ルームコードで対戦</button>
+    </div>
+  </div>
+
+  <div class="lobby-screen" id="screen-room-choice">
+    <h1>ルームコードで対戦</h1>
+    <div class="lobby-btn-col">
+      <button class="result-btn lobby-btn" id="btn-room-create">ルームを作る</button>
+      <button class="result-btn lobby-btn secondary" id="btn-room-join">ルームに参加する</button>
+    </div>
+    <button class="lobby-back-btn" data-back="screen-mode">← もどる</button>
+  </div>
+
+  <div class="lobby-screen" id="screen-room-host">
+    <h1>対戦相手を待っています…</h1>
+    <div class="room-code-display" id="room-code-display">------</div>
+    <div class="lobby-hint">このコードを対戦相手に伝えてね</div>
+    <button class="result-btn lobby-btn secondary" id="btn-copy-code">コードをコピー</button>
+    <div class="lobby-spinner" aria-hidden="true"></div>
+    <button class="lobby-back-btn" id="btn-cancel-host">キャンセル</button>
+  </div>
+
+  <div class="lobby-screen" id="screen-room-join">
+    <h1>ルームに参加する</h1>
+    <input type="text" id="join-code-input" class="join-code-input" maxlength="10" placeholder="コードを入力" autocapitalize="off" autocomplete="off">
+    <button class="result-btn lobby-btn" id="btn-join-submit">参加する</button>
+    <div class="lobby-error" id="join-error"></div>
+    <button class="lobby-back-btn" data-back="screen-room-choice">← もどる</button>
+  </div>
+
+  <div class="lobby-screen" id="screen-random-wait">
+    <h1>対戦相手を探しています…</h1>
+    <div class="lobby-spinner" aria-hidden="true"></div>
+    <div class="lobby-hint" id="random-wait-timer">経過時間: 0秒</div>
+    <button class="lobby-back-btn" id="btn-cancel-random">キャンセル</button>
+  </div>
+
+  <div class="lobby-screen" id="screen-matched">
+    <h1>対戦相手が見つかりました!</h1>
+    <div class="matched-opponent-name" id="matched-opponent-name"></div>
+  </div>
+
+</div>
+
+<div class="disconnect-overlay" id="disconnect-overlay">
+  <h2>対戦相手が切断しました</h2>
+  <button class="result-btn" id="disconnect-back-btn">ロビーに戻る</button>
+</div>
+
+<div class="match-timer" id="match-timer">0:00</div>
+<div class="arena">
+  <div class="side-panel">
+    <div class="player-label" id="player-label">YOU</div>
+    <div class="play-area">
+      <div class="board" id="board-player">
+        <div class="grid-cells" id="grid-cells-player"></div>
+        <div class="chain-toast" id="chain-toast-player"></div>
+      </div>
+      <div class="mini-panel">
+        <div class="mini-box"><div class="label">SCORE</div><div class="value" id="score-player">0</div></div>
+        <div class="mini-box"><div class="label">LEVEL</div><div class="value" id="level-player">1</div></div>
+        <div class="next-mini" id="next-player"></div>
+        <div class="garbage-gauge"><div class="label">くる</div><div class="value" id="garbage-player">0</div></div>
+      </div>
+    </div>
+    <div class="controls-hint">← → 移動　Z / X 回転　↓ 高速落下</div>
+  </div>
+
+  <div class="side-panel">
+    <div class="player-label" id="opponent-label">対戦相手</div>
+    <div class="play-area">
+      <div class="mini-panel">
+        <div class="mini-box"><div class="label">SCORE</div><div class="value" id="score-opponent">0</div></div>
+        <div class="mini-box"><div class="label">LEVEL</div><div class="value" id="level-opponent">1</div></div>
+        <div class="next-mini" id="next-opponent"></div>
+        <div class="garbage-gauge"><div class="label">くる</div><div class="value" id="garbage-opponent">0</div></div>
+      </div>
+      <div class="board" id="board-opponent">
+        <div class="grid-cells" id="grid-cells-opponent"></div>
+        <div class="chain-toast" id="chain-toast-opponent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="touch-controls" id="touch-controls">
+  <div class="dpad">
+    <button class="touch-btn dpad-btn dpad-up" id="touch-up" aria-label="回転(上)">▲</button>
+    <button class="touch-btn dpad-btn dpad-left" id="touch-left" aria-label="左移動">◀</button>
+    <button class="touch-btn dpad-btn dpad-down" id="touch-down" aria-label="高速落下">▼</button>
+    <button class="touch-btn dpad-btn dpad-right" id="touch-right" aria-label="右移動">▶</button>
+  </div>
+  <div class="rotate-pad">
+    <button class="touch-btn rotate-btn" id="touch-rotate-l" aria-label="左回転">↺</button>
+    <button class="touch-btn rotate-btn" id="touch-rotate-r" aria-label="右回転">↻</button>
+  </div>
+</div>
+
+<div class="result-overlay" id="result-overlay">
+  <h2 id="result-title">WIN!</h2>
+  <button class="result-btn" id="result-lobby-btn">ロビーに戻る</button>
+  <button class="result-btn" id="result-title-btn">タイトルへ戻る</button>
+</div>
+
+<div class="countdown-overlay" id="countdown-overlay">
+  <div class="countdown-number" id="countdown-number">3</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="src/js/supabase-config.js"></script>
+<script src="src/js/puzzle-core.js"></script>
+<script src="src/js/online-battle.js"></script>
+</body>
+</html>

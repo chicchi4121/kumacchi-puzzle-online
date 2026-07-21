@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>くまっちパズル - ランキング</title>
+<link rel="stylesheet" href="src/css/ranking.css">
+</head>
+<body>
+<a class="back-link" href="index.html">← タイトルへ</a>
+
+<div class="wrap">
+  <h1>ランキング</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-solo">ソロプレイ</button>
+    <button class="tab-btn" id="tab-battle">AI対戦</button>
+  </div>
+
+  <div class="tabs sub-tabs" id="diff-tabs" style="display:none;">
+    <button class="tab-btn diff-btn active" data-diff="easy">EASY</button>
+    <button class="tab-btn diff-btn" data-diff="normal">NORMAL</button>
+    <button class="tab-btn diff-btn" data-diff="hard">HARD</button>
+    <button class="tab-btn diff-btn" data-diff="master">MASTER</button>
+  </div>
+
+  <div class="diff-label" id="diff-label">ソロプレイランキング</div>
+
+  <div class="list-panel" id="list-panel">
+    <div class="state-msg">読み込み中...</div>
+  </div>
+
+  <button class="refresh-btn" id="refresh-btn">更新</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="src/js/supabase-config.js"></script>
+<script src="src/js/ranking.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>くまっちパズル</title>
+<link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+<div class="stage">
+  <div class="blocks" id="blocks"></div>
+
+  <div class="content">
+    <img class="mascot" src="assets/images/kuma-mascot.png" alt="くまっちパズル マスコット">
+
+    <div class="title-wrap">
+      <h1>くまっちパズル</h1>
+    </div>
+    <div class="subtitle">対戦型 落ちものパズル</div>
+
+    <div class="badge-row">
+      <div class="badge"></div>
+      <div class="badge"></div>
+      <div class="badge"></div>
+      <div class="badge"></div>
+    </div>
+
+    <button class="start-btn" id="start-btn">スタート</button>
+    <button class="start-btn secondary" id="battle-btn">AI対戦</button>
+    <button class="start-btn secondary" id="online-btn">🌐 オンライン対戦</button>
+    <a class="rank-nav-link" href="ranking.html">🏆 ランキングを見る</a>
+    <div class="hint" id="hint">タップしてスタート</div>
+  </div>
+</div>
+
+<audio id="bgm" src="assets/audio/title-bgm.mp3" loop preload="auto"></audio>
+<button class="sound-toggle" id="sound-toggle" aria-label="音を再生">🔈</button>
+
+<script src="src/js/title.js"></script>
+</body>
+</html>

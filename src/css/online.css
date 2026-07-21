@@ -1,0 +1,151 @@
+/* オンライン対戦ロビー: battle.css の変数・setup-overlay を土台にした追加スタイル */
+
+.lobby-overlay{
+  gap:18px;
+  padding:24px;
+  text-align:center;
+}
+
+.lobby-screen{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  width:100%;
+  max-width:360px;
+}
+.lobby-screen.active{ display:flex; }
+
+.lobby-screen h1{
+  font-family:'Baloo 2', sans-serif;
+  font-size:1.5rem;
+  color: var(--honey);
+  -webkit-text-stroke: 2px var(--choco-deep);
+  paint-order: stroke fill;
+  text-align:center;
+}
+
+.nickname-row{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  width:100%;
+}
+.nickname-row label{
+  font-size:0.75rem;
+  color: rgba(255,243,221,0.7);
+}
+.nickname-row input,
+.join-code-input{
+  font-family:'M PLUS Rounded 1c', sans-serif;
+  font-size:1rem;
+  padding:10px 16px;
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.25);
+  color: var(--cream);
+  text-align:center;
+  width:100%;
+}
+.nickname-row input::placeholder,
+.join-code-input::placeholder{ color: rgba(255,243,221,0.4); }
+
+.join-code-input{
+  font-size:1.3rem;
+  letter-spacing:4px;
+  text-transform:uppercase;
+}
+
+.lobby-btn-col{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  width:100%;
+}
+.lobby-btn{
+  width:100%;
+  padding:14px 20px;
+  font-size:1rem;
+}
+.lobby-btn.secondary{
+  background: rgba(255,255,255,0.1);
+  color: var(--cream);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2);
+}
+
+.lobby-back-btn{
+  background:none;
+  border:none;
+  color: rgba(255,243,221,0.6);
+  font-family:'M PLUS Rounded 1c', sans-serif;
+  font-size:0.85rem;
+  cursor:pointer;
+  padding:6px 10px;
+}
+.lobby-back-btn:hover{ color: var(--cream); }
+
+.lobby-hint{
+  font-size:0.8rem;
+  color: rgba(255,243,221,0.65);
+}
+
+.lobby-error{
+  font-size:0.8rem;
+  color:#ffb3b3;
+  min-height:1.2em;
+}
+
+.room-code-display{
+  font-family:'Baloo 2', sans-serif;
+  font-size:2.6rem;
+  letter-spacing:6px;
+  color: var(--cream);
+  background: rgba(0,0,0,0.3);
+  border-radius:14px;
+  padding:14px 28px;
+  -webkit-text-stroke: 1.5px var(--choco-deep);
+  paint-order: stroke fill;
+}
+
+.matched-opponent-name{
+  font-family:'Baloo 2', sans-serif;
+  font-size:1.2rem;
+  color: var(--cream);
+}
+
+.lobby-spinner{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,0.2);
+  border-top-color: var(--honey);
+  animation: lobby-spin 0.9s linear infinite;
+}
+@keyframes lobby-spin{
+  to{ transform: rotate(360deg); }
+}
+
+.disconnect-overlay{
+  position:fixed; inset:0;
+  background: rgba(20,10,5,0.9);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:18px;
+  z-index:38;
+  opacity:0; pointer-events:none;
+  transition: opacity 0.2s ease;
+}
+.disconnect-overlay.show{ opacity:1; pointer-events:all; }
+.disconnect-overlay h2{
+  font-family:'Baloo 2', sans-serif;
+  font-size:1.5rem;
+  color:#ffb3b3;
+  -webkit-text-stroke: 2px var(--choco-deep);
+  paint-order: stroke fill;
+  text-align:center;
+  padding:0 20px;
+}
+
+@media (max-width: 480px){
+  .room-code-display{ font-size:2rem; padding:10px 20px; letter-spacing:4px; }
+  .lobby-screen h1{ font-size:1.2rem; }
+}

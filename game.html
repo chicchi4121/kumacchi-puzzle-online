@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>くまっちパズル - プレイ</title>
+<link rel="stylesheet" href="src/css/game.css">
+</head>
+<body>
+<a class="back-link" href="index.html">← タイトルへ</a>
+<audio id="bgm" src="assets/audio/game-bgm.mp3" loop preload="auto"></audio>
+<button class="sound-toggle" id="sound-toggle" aria-label="音を再生">🔈</button>
+<button class="pause-toggle" id="pause-toggle" aria-label="ポーズ">⏸</button>
+
+<div class="wrap">
+  <div class="side panel next-panel">
+    <h2>NEXT</h2>
+    <div class="next-box" id="next1"></div>
+    <div class="next-box" id="next2"></div>
+  </div>
+
+  <div class="panel board-panel">
+    <div class="board" id="board">
+      <div class="grid-cells" id="grid-cells"></div>
+      <div class="chain-toast" id="chain-toast"></div>
+      <div class="zenkeshi-toast" id="zenkeshi-toast">全消し！ +5000</div>
+      <div class="gameover-overlay" id="gameover">
+        <h2>GAME OVER</h2>
+        <div class="match-time-display" id="time-display">プレイ時間: 0:00</div>
+        <div class="rank-submit" id="rank-submit">
+          <input type="text" id="rank-name" maxlength="12" placeholder="なまえ(12文字まで)">
+          <button class="retry-btn" id="rank-submit-btn">ランキングに登録</button>
+          <div class="rank-status" id="rank-status"></div>
+        </div>
+        <button class="retry-btn" id="retry-btn">もう一度</button>
+        <button class="retry-btn" id="title-btn">タイトルへ戻る</button>
+        <a class="rank-link" href="ranking.html">ランキングを見る →</a>
+      </div>
+      <div class="pause-overlay" id="pause-overlay">
+        <h2>PAUSE</h2>
+        <button class="retry-btn" id="resume-btn">再開する</button>
+      </div>
+    </div>
+    <div class="controls-hint">
+      ← → 移動　　Z / X 回転　　↓ 高速落下
+    </div>
+  </div>
+
+  <div class="side panel score-panel">
+    <div class="stat">
+      <div class="label">SCORE</div>
+      <div class="value" id="score-value">0</div>
+    </div>
+    <div class="stat" style="margin-top:10px;">
+      <div class="label">LEVEL</div>
+      <div class="value" id="level-value">1</div>
+    </div>
+    <div class="stat" style="margin-top:10px;">
+      <div class="label">TIME</div>
+      <div class="value" id="live-time-value">0:00</div>
+    </div>
+  </div>
+</div>
+
+<div class="touch-controls" id="touch-controls">
+  <div class="dpad">
+    <button class="touch-btn dpad-btn dpad-up" id="touch-up" aria-label="回転(上)">▲</button>
+    <button class="touch-btn dpad-btn dpad-left" id="touch-left" aria-label="左移動">◀</button>
+    <button class="touch-btn dpad-btn dpad-down" id="touch-down" aria-label="高速落下">▼</button>
+    <button class="touch-btn dpad-btn dpad-right" id="touch-right" aria-label="右移動">▶</button>
+  </div>
+  <div class="rotate-pad">
+    <button class="touch-btn rotate-btn" id="touch-rotate-l" aria-label="左回転">↺</button>
+    <button class="touch-btn rotate-btn" id="touch-rotate-r" aria-label="右回転">↻</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="src/js/supabase-config.js"></script>
+<script src="src/js/game.js"></script>
+</body>
+</html>
