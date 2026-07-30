@@ -162,7 +162,22 @@ console.log('\n== 5. トップ画面.pngをタイトル画面に使用 ==');
 
   const titleSrc = fs.readFileSync('src/scenes/TitleScene.js', 'utf8');
   check('TitleSceneがpreload()でtitleLogo画像を読み込んでいる', /this\.load\.image\(TITLE_LOGO_KEY, TITLE_LOGO_PATH\)/.test(titleSrc));
-  check('TitleScene.create()内でロゴ画像を表示している(画像優先、失敗時はテキストへフォールバック)', /this\.textures\.exists\(TITLE_LOGO_KEY\)/.test(titleSrc) && /this\.add\.image\(centerX, logoCenterY, TITLE_LOGO_KEY\)/.test(titleSrc));
+  check('TitleScene.create()内でロゴ画像を表示している(画像優先、失敗時はテキストへフォールバック)', /this\.textures\.exists\(TITLE_LOGO_KEY\)/.test(titleSrc) && /this\.add\.image\(centerX, centerY, TITLE_LOGO_KEY\)/.test(titleSrc));
+}
+
+console.log('\n== 5b. 「トップ画面全体に画像表示させてほしい」「選択項目は見やすくしてほしい」対応 ==');
+{
+  const titleSrc = fs.readFileSync('src/scenes/TitleScene.js', 'utf8');
+  check(
+    'ロゴ画像を画面いっぱいに拡大するcover方式のスケール計算がある',
+    /Math\.max\(this\.scale\.width \/ bg\.width, this\.scale\.height \/ bg\.height\)/.test(titleSrc),
+  );
+  check('背景画像の上に半透明の暗幕(コントラスト確保用)を重ねている', /this\.add\.rectangle\(centerX, centerY, this\.scale\.width, this\.scale\.height, 0x000000/.test(titleSrc));
+  check('メニュー項目の背後に読みやすさ用の半透明パネルを敷いている', /panelWidth, panelBottom - panelTop, 0x000000/.test(titleSrc));
+  check(
+    '_createMenuButtonが不透明な背景色と縁取り(stroke)で視認性を高めている',
+    /idleBg = 'rgba\(35,35,40,0\.88\)'/.test(titleSrc) && /strokeThickness: disabled \? 0 : 2/.test(titleSrc),
+  );
 }
 
 console.log('\n== 6. 爆弾.pngをゲーム内の爆弾表示に使用 ==');

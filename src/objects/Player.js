@@ -53,6 +53,10 @@ export class Player {
     this.speedMultiplier = 1;
     this.canPassSoftBlock = false; // 👻
     this.canKickBombs = false; // 💥
+    // 「新しいアイテム時限装置機能アイテムを追加してほしい」への対応。
+    // trueになると、自分の爆弾は導火線任せにせず、爆弾ボタンを押した
+    // タイミングで手動起爆できるようになる(GameScene._tryPlaceBomb参照)。
+    this.hasRemoteDetonator = false; // ⏱
     this.invincibleUntil = 0;
     this.isAlive = true;
     this.isMoving = false;

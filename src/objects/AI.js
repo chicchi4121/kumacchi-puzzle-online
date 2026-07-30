@@ -37,38 +37,50 @@ import { Explosion } from './Explosion.js';
 // =反応を少し遅く、mistakeChance(回避を試みない確率)を少し増やす、
 // bombChance/killShotChance/chaseChance(積極性)を少し下げる)。各難易度間の
 // 相対的な強さの順序(EASY<NORMAL<HARD<EXPERT)は変えていない。
+//
+// 【2026-07再修正】「敵がまだ爆弾をかわし過ぎるのでもう少し弱くしてほしい」
+// への対応。上の調整後もmistakeChance(「そもそも回避を試みない確率」)しか
+// 難易度間で差が無く、実際に回避を試みた場合の_findSafeDirection(BFSで
+// 安全なマスを探す処理)自体は難易度に関わらず一律で深さ6まで探索する
+// 「ほぼ完璧な回避」ロジックだったため、EASYであっても一度回避を試みれば
+// ほとんど確実に成功してしまっていた。そこで新たにescapeSearchDepthを
+// 追加し、難易度が低いほど探索の見通しを短くする(=複雑な位置関係からは
+// 逃げ切れず、危険地帯に留まって被弾しやすくなる)ようにした。あわせて
+// mistakeChance自体もさらに引き上げ、「そもそも回避を試みない」頻度も
+// 増やした。
 const AI_PROFILES = Object.freeze({
   [AI_DIFFICULTY.EASY]: {
     decisionIntervalMs: 600, // 判断の間隔（長いほど反応が遅い）
     // 危険地帯にいても回避に失敗する確率。
-    // (自爆しすぎ対策で全難易度引き下げ済み。_findSafeDirection自体のBFS化で
-    //  「回避を試みたのに失敗する」ケースは大幅に減ったため、mistakeChanceは
-    //  純粋に「そもそも回避を試みない」割合として機能する)
-    mistakeChance: 0.3,
+    mistakeChance: 0.45,
     bombChance: 0.28, // ブロック破壊(徘徊/進路上)を試みる確率
     killShotChance: 0.4, // 撃破チャンスを実行に移す確率
     chaseChance: 0.22, // プレイヤーを追跡する確率（それ以外は徘徊/アイテム優先）
+    escapeSearchDepth: 2, // 回避経路を探索する先読みの深さ(浅いほど複雑な回避に失敗しやすい)
   },
   [AI_DIFFICULTY.NORMAL]: {
     decisionIntervalMs: 420,
-    mistakeChance: 0.16,
+    mistakeChance: 0.28,
     bombChance: 0.45,
     killShotChance: 0.58,
     chaseChance: 0.45,
+    escapeSearchDepth: 3,
   },
   [AI_DIFFICULTY.HARD]: {
     decisionIntervalMs: 260,
-    mistakeChance: 0.07,
+    mistakeChance: 0.14,
     bombChance: 0.6,
     killShotChance: 0.75,
     chaseChance: 0.65,
+    escapeSearchDepth: 5,
   },
   [AI_DIFFICULTY.EXPERT]: {
     decisionIntervalMs: 150,
-    mistakeChance: 0.03,
+    mistakeChance: 0.06,
     bombChance: 0.75,
     killShotChance: 0.88,
     chaseChance: 0.8,
+    escapeSearchDepth: 6,
   },
 });
 
@@ -244,8 +256,10 @@ export class AI {
       return immediateSafe[Math.floor(random.next() * immediateSafe.length)];
     }
 
-    // 隣接マスに逃げ場が無ければ、数マス先までBFSで辿って安全なマスを探す
-    const maxDepth = 6;
+    // 隣接マスに逃げ場が無ければ、数マス先までBFSで辿って安全なマスを探す。
+    // 探索の深さは難易度依存(escapeSearchDepth): 低い難易度ほど浅くしか
+    // 読めず、複雑な位置関係からは逃げ切れないことが多くなる。
+    const maxDepth = this.profile.escapeSearchDepth ?? 6;
     for (let depth = 1; depth < maxDepth && frontier.length > 0; depth++) {
       const found = [];
       const nextFrontier = [];

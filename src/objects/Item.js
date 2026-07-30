@@ -20,6 +20,7 @@ export const ITEM_EMOJI = Object.freeze({
   [ITEM_TYPES.LIFE_UP]: '❤️',
   [ITEM_TYPES.GHOST]: '👻',
   [ITEM_TYPES.KICK]: '💥',
+  [ITEM_TYPES.TIMER]: '⏱',
 });
 
 let nextItemInstanceId = 1;

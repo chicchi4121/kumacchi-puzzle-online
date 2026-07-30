@@ -98,13 +98,20 @@ console.log('== 1. ViewportLayout.computeBattleLayout(画面上下をブラウ�
 
 console.log('\n== 2. アイテム出現の重み付け(壁抜け👻の出現量を半分に) ==');
 {
+  // 「時限装置(⏱/TIMER)も強力な効果のため、GHOSTと同様に他の半分の重みに
+  // した」(2026-07)ため、「半減されている特別枠」はGHOST/TIMERの2種類に
+  // なった。他の"通常"タイプ(重み2)と比較する。
   const pool = Object.entries(ITEM_SPAWN_WEIGHTS).flatMap(([type, weight]) => Array(weight).fill(type));
+  const halvedTypes = [ITEM_TYPES.GHOST, ITEM_TYPES.TIMER];
   const ghostWeight = ITEM_SPAWN_WEIGHTS[ITEM_TYPES.GHOST];
+  const timerWeight = ITEM_SPAWN_WEIGHTS[ITEM_TYPES.TIMER];
   const otherWeights = Object.entries(ITEM_SPAWN_WEIGHTS)
-    .filter(([type]) => type !== ITEM_TYPES.GHOST)
+    .filter(([type]) => !halvedTypes.includes(type))
     .map(([, w]) => w);
-  check('👻(GHOST)の重みは他の全タイプより小さい(半減)', otherWeights.every((w) => ghostWeight < w));
-  check('👻(GHOST)の重みはちょうど他の半分', otherWeights.every((w) => ghostWeight === w / 2));
+  check('👻(GHOST)の重みは他の"通常"タイプより小さい(半減)', otherWeights.every((w) => ghostWeight < w));
+  check('👻(GHOST)の重みはちょうど他の"通常"タイプの半分', otherWeights.every((w) => ghostWeight === w / 2));
+  check('⏱(TIMER)の重みも他の"通常"タイプより小さい(半減)', otherWeights.every((w) => timerWeight < w));
+  check('⏱(TIMER)の重みもちょうど他の"通常"タイプの半分', otherWeights.every((w) => timerWeight === w / 2));
 
   // Stage.generate()を何度も回し、実際にITEMブロックとして出現した種別の頻度が
   // 重みの比率にだいたい従うことを統計的に確認する(乱数のため厳密一致はしない)。

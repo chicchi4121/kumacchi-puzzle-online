@@ -32,6 +32,9 @@ const ITEM_EFFECTS = {
   [ITEM_TYPES.KICK]: (player) => {
     player.canKickBombs = true;
   },
+  [ITEM_TYPES.TIMER]: (player) => {
+    player.hasRemoteDetonator = true;
+  },
 };
 
 export class ItemSystem {

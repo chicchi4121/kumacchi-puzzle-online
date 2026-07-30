@@ -1117,12 +1117,26 @@ export class GameScene extends Phaser.Scene {
     return this.bombs.some((b) => !b.detonated && b.face === face && b.col === col && b.row === row);
   }
 
+  /**
+   * 「新しいアイテム時限装置機能アイテムを追加してほしい」への対応:
+   * ⏱(TIMER)取得済みプレイヤーが、新しく爆弾を置けない状況(既に上限数
+   * 置いている・自分の爆弾の上に立っている等)で爆弾ボタンを押した場合は、
+   * 新規設置の代わりに自分が既に置いている爆弾を全て今すぐ起爆する
+   * (リモート起爆。導火線(BOMB_FUSE_MS)任せにせず自分のタイミングで
+   * 爆発させられる)。⏱未取得なら、これまで通り単に何もしない。
+   */
   _tryPlaceBomb(player) {
     if (!player || !player.isAlive) return;
-    if (!player.canPlaceBomb()) return;
-    if (this._isTileOccupiedByBomb(player.face, player.col, player.row)) return;
-    // 壊せる壁(👻取得済みで中に入り込んでいる)の中に立っている間は爆弾を設置できない
-    if (!this.stage.canPlaceBombAt(player.face, player.col, player.row)) return;
+
+    const canPlaceHere =
+      player.canPlaceBomb() &&
+      !this._isTileOccupiedByBomb(player.face, player.col, player.row) &&
+      this.stage.canPlaceBombAt(player.face, player.col, player.row);
+
+    if (!canPlaceHere) {
+      if (player.hasRemoteDetonator) this._tryRemoteDetonate(player);
+      return;
+    }
 
     const bomb = new Bomb(this, player.face, player.col, player.row, {
       ownerId: player.playerId,
@@ -1132,6 +1146,23 @@ export class GameScene extends Phaser.Scene {
     this.bombs.push(bomb);
     this.cubeRenderer?.addBomb(bomb);
     player.onBombPlaced();
+    soundSystem.playSE('bomb_place');
+  }
+
+  /**
+   * ⏱(TIMER)によるリモート起爆本体。playerが所有する、まだ爆発していない
+   * 全ての爆弾(蹴られてスライド中のものも含む)を即座に起爆する。
+   * 1つも無ければ何もしない。誘爆と同じ`detonate()`をそのまま呼ぶだけ
+   * なので、導火線タイマーの解除・爆風計算・ネットワーク同期(オンライン
+   * 対戦時の explosion イベント送信)は全て既存の`_onBombDetonate`の
+   * 仕組みがそのまま面倒を見る。
+   */
+  _tryRemoteDetonate(player) {
+    const ownBombs = this.bombs.filter((b) => b.ownerId === player.playerId && !b.detonated);
+    if (ownBombs.length === 0) return;
+    for (const bomb of ownBombs) {
+      bomb.detonate();
+    }
     soundSystem.playSE('bomb_place');
   }
 

@@ -132,13 +132,20 @@ export const ITEM_TYPES = Object.freeze({
   LIFE_UP: 'life_up', // ❤️ 残機+1
   GHOST: 'ghost', // 👻 壊せるブロックを通過可能
   KICK: 'kick', // 💥 爆弾キック(蹴って移動させられる)
+  // 「新しいアイテム時限装置機能アイテムを追加してほしい」への対応(2026-07)。
+  // ⏱ 時限装置(リモート起爆): 取得すると、自分の爆弾は導火線(BOMB_FUSE_MS)
+  // 任せにせず、爆弾ボタンを押すタイミングで自分の意思で起爆できるように
+  // なる(GameScene._tryPlaceBomb参照)。導火線自体は保険としてそのまま
+  // 残るため、起爆し忘れても一定時間後には自然に爆発する。
+  TIMER: 'timer',
 });
 
 // 各アイテムの出現しやすさの重み(データ駆動: 開発ルール6)。Stage.js側で
 // この重みに従って「アイテム候補プール」を組み立てる(重み2のタイプが
 // 重み1のタイプの2倍出現しやすい、という単純な多重化方式)。
 // 「壁抜け(GHOST)は強力なので出現量を半分にしてほしい」という要望に対応し、
-// GHOSTのみ他の半分の重みにしてある。
+// GHOSTのみ他の半分の重みにしてある。時限装置(TIMER)も強力な効果のため
+// GHOSTと同様、他の半分の重みにしてある。
 export const ITEM_SPAWN_WEIGHTS = Object.freeze({
   [ITEM_TYPES.BOMB_UP]: 2,
   [ITEM_TYPES.FIRE_UP]: 2,
@@ -147,6 +154,7 @@ export const ITEM_SPAWN_WEIGHTS = Object.freeze({
   [ITEM_TYPES.LIFE_UP]: 2,
   [ITEM_TYPES.GHOST]: 1,
   [ITEM_TYPES.KICK]: 2,
+  [ITEM_TYPES.TIMER]: 1,
 });
 
 // 💥(KICK)アイテムを持つプレイヤーが爆弾へ向かって移動した際、爆弾を
