@@ -1,0 +1,10 @@
+{
+  "name": "kumacchi-bomb",
+  "version": "0.1.0",
+  "description": "くまっちボム！ - 1〜6人対戦アクションゲーム (Phase1: ゲーム基盤)",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve . -l 8080"
+  },
+  "license": "UNLICENSED"
+}

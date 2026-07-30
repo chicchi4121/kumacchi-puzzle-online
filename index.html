@@ -1,41 +1,90 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>くまっちパズル</title>
-<link rel="stylesheet" href="src/css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>くまっちボム！</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #1e1e1e;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    }
+    #game-container {
+      position: relative;
+      line-height: 0;
+      /*
+        #cube-canvas と .phaser-canvas をどちらも position:absolute にした
+        ことで、#game-container の子要素が通常のフローから外れ、明示的な
+        サイズ指定が無いとコンテナが0×0に潰れてしまう。PhaserのScale.FIT
+        モードは親要素の実測サイズに合わせてcanvasの表示サイズを決めるため、
+        コンテナが0×0だとゲーム画面ごと非表示になる(タイトル画面すら
+        表示されない不具合の原因)。ビューポート全体を占めるよう明示的に
+        サイズを与えて解消する。
+      */
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+    }
+    /*
+      サイコロ6面ステージ(Phase3)用: Three.jsで3D描画するcanvasを
+      #game-container の下敷きとして重ねる。Phaser側のcanvasは
+      main.jsでtransparent:trueにしてあるため、対戦シーン(GameScene)では
+      このcanvasの3D映像がPhaserのUI/HUDテキストの下に透けて見える。
+      #game-container 内で先に配置しておくことで、Phaserが後から追加する
+      自身のcanvasより下(z-index)に重なる。
+    */
+    #cube-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .phaser-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+  </style>
+  <!-- Phaser 3 (CDN読み込み。ビルドステップなしで軽量に動作させるため) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.70.0/phaser.min.js"></script>
+
+  <!--
+    VRM対応(Phase3)用: Three.js / three-vrm をビルドステップなしで使うための
+    import map。VRMSystem.js内では `import * as THREE from 'three'` のような
+    ベア指定子(bare specifier)でロードするため、このimport mapが
+    どのmoduleスクリプトよりも前に必要（importmapは文書内で最初の
+    moduleスクリプトより前になければならない）。
+  -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+      "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@2/lib/three-vrm.module.js",
+      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+    }
+  }
+  </script>
 </head>
 <body>
-<div class="stage">
-  <div class="blocks" id="blocks"></div>
-
-  <div class="content">
-    <img class="mascot" src="assets/images/kuma-mascot.png" alt="くまっちパズル マスコット">
-
-    <div class="title-wrap">
-      <h1>くまっちパズル</h1>
-    </div>
-    <div class="subtitle">対戦型 落ちものパズル</div>
-
-    <div class="badge-row">
-      <div class="badge"></div>
-      <div class="badge"></div>
-      <div class="badge"></div>
-      <div class="badge"></div>
-    </div>
-
-    <button class="start-btn" id="start-btn">スタート</button>
-    <button class="start-btn secondary" id="battle-btn">AI対戦</button>
-    <button class="start-btn secondary" id="online-btn">🌐 オンライン対戦</button>
-    <a class="rank-nav-link" href="ranking.html">🏆 ランキングを見る</a>
-    <div class="hint" id="hint">タップしてスタート</div>
+  <div id="game-container">
+    <!--
+      サイコロ6面ステージ(Phase3)の3D描画用canvas。CubeRenderer.jsが
+      Three.jsでこのcanvasに直接描画する。GameContainer内でPhaserのcanvasより
+      前に置くことで、Phaserのcanvas(transparent:true、HUD/UI用)の下に
+      3D映像が透けて見える。
+    -->
+    <canvas id="cube-canvas"></canvas>
   </div>
-</div>
-
-<audio id="bgm" src="assets/audio/title-bgm.mp3" loop preload="auto"></audio>
-<button class="sound-toggle" id="sound-toggle" aria-label="音を再生">🔈</button>
-
-<script src="src/js/title.js"></script>
+  <script type="module" src="./src/main.js"></script>
 </body>
 </html>

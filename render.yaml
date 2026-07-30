@@ -1,0 +1,19 @@
+# Render Blueprint
+# ------------------------------------------------------------
+# このファイルをリポジトリ直下に置いた状態でRenderの
+# 「New +」→「Blueprint」からこのGitHubリポジトリを選択すると、
+# 設定不要で静的サイトとしてデプロイされる。
+# Phase1はビルドステップ不要（Phaser CDN読み込み・ES Modulesのみ）の
+# 静的サイトのため、runtime: static を使用する。
+# ------------------------------------------------------------
+services:
+  - type: web
+    name: kumacchi-bomb
+    runtime: static
+    buildCommand: "echo 'no build step needed (static Phaser game)'"
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
